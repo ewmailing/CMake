@@ -229,6 +229,7 @@ public:
     const char* Target;
     const char* LinkLibraries;
     const char* Source;
+    const char* SourcesSwift;
     const char* AssemblySource;
     const char* PreprocessedSource;
     const char* Output;

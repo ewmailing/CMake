@@ -511,6 +511,26 @@ cmMakefileTargetGenerator
       << "\n";
     }
 
+  // Swift needs a list of all Swift source files
+  std::string sourceFilesSwiftString;
+  if(lang == "Swift")
+    {
+    std::vector<cmSourceFile const*> objectSources;
+    const std::string& config =
+      this->Makefile->GetSafeDefinition("CMAKE_BUILD_TYPE");
+    this->GeneratorTarget->GetObjectSources(objectSources, config);
+    for(std::vector<cmSourceFile const*>::const_iterator
+        si = objectSources.begin(); si != objectSources.end(); ++si)
+      {
+      if((*si)->GetLanguage() == "Swift")
+        {
+          sourceFilesSwiftString += (*si)->GetFullPath();
+          sourceFilesSwiftString += " ";
+        }
+      }
+    }
+
+
   // Get the output paths for source and object files.
   std::string sourceFile = this->Convert(source.GetFullPath(),
                              cmLocalGenerator::NONE,
@@ -594,6 +614,7 @@ cmMakefileTargetGenerator
   vars.TargetPDB = targetOutPathPDB.c_str();
   vars.TargetCompilePDB = targetOutPathCompilePDB.c_str();
   vars.Source = sourceFile.c_str();
+  vars.SourcesSwift = sourceFilesSwiftString.c_str();
   std::string shellObj =
     this->Convert(obj,
                   cmLocalGenerator::NONE,

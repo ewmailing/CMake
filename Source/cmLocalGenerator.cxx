@@ -610,6 +610,15 @@ cmLocalGenerator::ExpandRuleVariable(std::string const& variable,
       return replaceValues.Source;
       }
     }
+
+  if(replaceValues.SourcesSwift)
+    {
+    if(variable == "Swift-SOURCES")
+      {
+      return replaceValues.SourcesSwift;
+      }
+    }
+
   if(replaceValues.PreprocessedSource)
     {
     if(variable == "PREPROCESSED_SOURCE")
