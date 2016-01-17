@@ -530,6 +530,22 @@ cmMakefileTargetGenerator
       }
     }
 
+  std::string swiftBridgingHeaderString;
+  if(lang == "Swift")
+    {
+
+    const char *bridging_header = this->GeneratorTarget->GetProperty("SWIFT_BRIDGING_HEADER");
+    // We only set the bridging header if it has been set.
+    // This handles the -import-objc-header lead-in switch 
+    // so we can omit the whole thing if not set.
+    if(bridging_header)
+      {
+          swiftBridgingHeaderString = "-import-objc-header ";
+          swiftBridgingHeaderString += bridging_header;
+          swiftBridgingHeaderString += " ";
+      }
+    }
+
 
   // Get the output paths for source and object files.
   std::string sourceFile = this->Convert(source.GetFullPath(),
@@ -615,6 +631,7 @@ cmMakefileTargetGenerator
   vars.TargetCompilePDB = targetOutPathCompilePDB.c_str();
   vars.Source = sourceFile.c_str();
   vars.SourcesSwift = sourceFilesSwiftString.c_str();
+  vars.SwiftBridgingHeaderFlags = swiftBridgingHeaderString.c_str();
   std::string shellObj =
     this->Convert(obj,
                   cmLocalGenerator::NONE,
