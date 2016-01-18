@@ -230,6 +230,7 @@ public:
     const char* LinkLibraries;
     const char* Source;
     const char* SourcesSwift;
+    const char* SwiftBridgingHeaderFlags;
     const char* AssemblySource;
     const char* PreprocessedSource;
     const char* Output;

@@ -619,6 +619,14 @@ cmLocalGenerator::ExpandRuleVariable(std::string const& variable,
       }
     }
 
+  if(replaceValues.SwiftBridgingHeaderFlags)
+    {
+    if(variable == "Swift-BRIDGING_HEADER")
+      {
+      return replaceValues.SwiftBridgingHeaderFlags;
+      }
+    }
+
   if(replaceValues.PreprocessedSource)
     {
     if(variable == "PREPROCESSED_SOURCE")
