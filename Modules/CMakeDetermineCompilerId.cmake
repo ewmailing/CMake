@@ -326,10 +326,10 @@ Id flags: ${testflags}
       endif()
     endif()
   else()
-	  message("else exeecute_process  ${CMAKE_${lang}_COMPILER} .. ${CMAKE_${lang}_COMPILER_ID_ARG1} .. ${CMAKE_${lang}_COMPILER_ID_FLAGS_LIST}")
-	  message("testflags ${testflags} .. ${src}")
-  message("swift version flags 2: ${CMAKE_Swift_COMPILER_ID_FLAGS_LIST}")
-  message("swift version flags 3: ${CMAKE_${lang}_COMPILER_ID_FLAGS_LIST}")
+	  #	  message("else exeecute_process  ${CMAKE_${lang}_COMPILER} .. ${CMAKE_${lang}_COMPILER_ID_ARG1} .. ${CMAKE_${lang}_COMPILER_ID_FLAGS_LIST}")
+	  # message("testflags ${testflags} .. ${src}")
+	  #  message("swift version flags 2: ${CMAKE_Swift_COMPILER_ID_FLAGS_LIST}")
+	  #  message("swift version flags 3: ${CMAKE_${lang}_COMPILER_ID_FLAGS_LIST}")
 	  
     execute_process(
       COMMAND "${CMAKE_${lang}_COMPILER}"
