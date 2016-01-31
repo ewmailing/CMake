@@ -26,6 +26,11 @@ else()
   if(NOT CMAKE_Swift_COMPILER)
     set(CMAKE_Swift_COMPILER_INIT NOTFOUND)
 
+  # Running plain 'swift' will enter interactive (REPL) mode which is not what we want
+  set(CMAKE_Swift_COMPILER_ID_FLAGS "-version")
+  set(CMAKE_Swift_COMPILER_ID_FLAGS_LIST "-version")
+  message("swift version flags: ${CMAKE_Swift_COMPILER_ID_FLAGS_LIST}")
+
     # prefer the environment variable CC
 	if(NOT $ENV{SWIFTC} STREQUAL "")
       get_filename_component(CMAKE_Swift_COMPILER_INIT $ENV{SWIFTC} PROGRAM PROGRAM_ARGS CMAKE_Swift_FLAGS_ENV_INIT)
@@ -50,15 +55,32 @@ else()
 		      set(CMAKE_Swift_COMPILER_LIST swift)
     endif()
 
+
 	  MESSAGE("_cmake_find_compiler")
 	_cmake_find_compiler(Swift)
+	  MESSAGE("end _cmake_find_compiler")
 
   else()
 	  MESSAGE("_cmake_find_compiler_path")
     _cmake_find_compiler_path(Swift)
+	  MESSAGE("end _cmake_find_compiler_path")
   endif()
-  mark_as_advanced(CMAKE_Swift_COMPILER)
 
+  #	set(CMAKE_Swift_COMPILER_ID_TEST_FLAGS_FIRST
+  #		"-version"
+  #	)
+  #	set(CMAKE_Swift_COMPILER_ID_TEST_FLAGS
+  #		"-version"
+  #	)
+  #	set(CMAKE_Swift_COMPILER_ID unknown)
+  #	set(CMAKE_Swift_COMPILER_ID_ARG1 "-version")
+  #	list(APPEND CMAKE_Swift_COMPILER_ID_VENDORS unknown)
+  #	list(APPEND CMAKE_Swift_COMPILER_ID_VENDORS_FLAGS_unknown "-version")
+
+
+
+
+  mark_as_advanced(CMAKE_Swift_COMPILER)
 
 
 

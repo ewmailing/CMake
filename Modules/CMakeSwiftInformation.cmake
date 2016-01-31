@@ -98,7 +98,7 @@ if(NOT DEFINED CMAKE_SHARED_LIBRARY_LINK_Swift_WITH_RUNTIME_PATH)
 endif()
 
 if(NOT CMAKE_INCLUDE_FLAG_Swift)
-  set(CMAKE_INCLUDE_FLAG_Swift ${CMAKE_INCLUDE_FLAG_C})
+  set(CMAKE_INCLUDE_FLAG_Swift -I)
 endif()
 
 if(NOT CMAKE_INCLUDE_FLAG_SEP_Swift)
@@ -206,7 +206,7 @@ if(NOT CMAKE_Swift_COMPILE_OBJECT)
 	  #  	  "<CMAKE_Swift_COMPILER> -frontend -c <DEFINES> <INCLUDES> <FLAGS> -primary-file <SOURCE> -emit-module -module-name <TARGET> -o <OBJECT>")
 
 	  #	  "<CMAKE_Swift_COMPILER> -frontend -c <DEFINES> <INCLUDES> <FLAGS> -primary-file <OBJECT> <OBJECTS> -emit-module -module-name <TARGET> -o <OBJECT>  -emit-module-path   -c <SOURCE>")
-	  "<CMAKE_Swift_COMPILER> -frontend -c  <INCLUDES> <FLAGS> -primary-file <SOURCE> <Swift-SOURCES> <Swift-BRIDGING_HEADER> -emit-module -module-name <TARGET> -o <OBJECT>")
+	  "<CMAKE_Swift_COMPILER> -frontend -c <DEFINES> <INCLUDES> <FLAGS> -primary-file <SOURCE> <Swift-SOURCES> <Swift-BRIDGING_HEADER> -emit-module -module-name <TARGET> -o <OBJECT>")
 endif()
 
 

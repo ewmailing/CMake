@@ -23,9 +23,13 @@ function(CMAKE_DETERMINE_COMPILER_ID lang flagvar src)
 
   # Make sure user-specified compiler flags are used.
   if(CMAKE_${lang}_FLAGS)
-    set(CMAKE_${lang}_COMPILER_ID_FLAGS ${CMAKE_${lang}_FLAGS})
+	  ### HACK for Swift
+	  #set(CMAKE_${lang}_COMPILER_ID_FLAGS ${CMAKE_${lang}_FLAGS})
+	  list(APPEND CMAKE_${lang}_COMPILER_ID_FLAGS ${CMAKE_${lang}_FLAGS})
   else()
-    set(CMAKE_${lang}_COMPILER_ID_FLAGS $ENV{${flagvar}})
+	  ### HACK for Swift
+	  #set(CMAKE_${lang}_COMPILER_ID_FLAGS $ENV{${flagvar}})
+	  list(APPEND CMAKE_${lang}_COMPILER_ID_FLAGS $ENV{${flagvar}})
   endif()
   string(REPLACE " " ";" CMAKE_${lang}_COMPILER_ID_FLAGS_LIST "${CMAKE_${lang}_COMPILER_ID_FLAGS}")
 
@@ -322,6 +326,11 @@ Id flags: ${testflags}
       endif()
     endif()
   else()
+	  message("else exeecute_process  ${CMAKE_${lang}_COMPILER} .. ${CMAKE_${lang}_COMPILER_ID_ARG1} .. ${CMAKE_${lang}_COMPILER_ID_FLAGS_LIST}")
+	  message("testflags ${testflags} .. ${src}")
+  message("swift version flags 2: ${CMAKE_Swift_COMPILER_ID_FLAGS_LIST}")
+  message("swift version flags 3: ${CMAKE_${lang}_COMPILER_ID_FLAGS_LIST}")
+	  
     execute_process(
       COMMAND "${CMAKE_${lang}_COMPILER}"
               ${CMAKE_${lang}_COMPILER_ID_ARG1}
@@ -342,7 +351,7 @@ Id flags: ${testflags}
      )
     # Compilation failed.
     set(MSG
-      "Compiling the ${lang} compiler identification source file \"${src}\" failed.
+      "Compiling the ${lang} compiler identification source file 1\"${src}\" failed.
 ${COMPILER_DESCRIPTION}
 The output was:
 ${CMAKE_${lang}_COMPILER_ID_RESULT}
