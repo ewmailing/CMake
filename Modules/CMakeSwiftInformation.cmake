@@ -177,7 +177,7 @@ include(CMakeCommonLanguageInclude)
 # create a C shared library
 if(NOT CMAKE_Swift_CREATE_SHARED_LIBRARY)
   set(CMAKE_Swift_CREATE_SHARED_LIBRARY
-      "<CMAKE_Swift_COMPILER>c <CMAKE_SHARED_LIBRARY_Swift_FLAGS> -emit-library <LANGUAGE_COMPILE_FLAGS> <LINK_FLAGS> <CMAKE_SHARED_LIBRARY_CREATE_Swift_FLAGS> <SONAME_FLAG><TARGET_SONAME> -o <TARGET> <OBJECTS> <LINK_LIBRARIES>")
+    "<CMAKE_Swift_COMPILER>c <CMAKE_SHARED_LIBRARY_Swift_FLAGS> -emit-library <LANGUAGE_COMPILE_FLAGS> <CMAKE_Swift_LINK_FLAGS> <CMAKE_SHARED_LIBRARY_CREATE_Swift_FLAGS> <SONAME_FLAG><TARGET_SONAME> -o <TARGET> <OBJECTS> <LINK_LIBRARIES>")
 #  "<CMAKE_Swift_COMPILER> <CMAKE_SHARED_LIBRARY_C_FLAGS> <LANGUAGE_COMPILE_FLAGS> <LINK_FLAGS> <CMAKE_SHARED_LIBRARY_CREATE_C_FLAGS> <SONAME_FLAG><TARGET_SONAME> -o <TARGET> <OBJECTS> <LINK_LIBRARIES>")
 endif()
 
@@ -204,13 +204,13 @@ if(NOT CMAKE_Swift_COMPILE_OBJECT)
     #"<CMAKE_Swift_COMPILER> -frontend -c <DEFINES> <INCLUDES> <FLAGS> -primary-file <SOURCE> <Swift-SOURCES> <Swift-BRIDGING_HEADER> -emit-module -module-name <TARGET_BASE> -o <OBJECT>")
     # Notes: I need something like OBJECT_BASE to do the ~partial.swiftdoc and ~partial.swiftmodule names more correctly. Theoretical SOURCE_BASE would have the problem of including the path.
     # There needs to be another step to merge the partials together. These files are generated for the benefit of those who may need to hack something together until proper support can be built.
-    "<CMAKE_Swift_COMPILER> -frontend -c <DEFINES> <INCLUDES> <FLAGS> -primary-file <SOURCE> <Swift-SOURCES> <Swift-BRIDGING_HEADER> -emit-module-doc-path <OBJECT>~partial.swiftdoc -emit-module -module-name <TARGET_BASE> -emit-module-path <OBJECT>~partial.swiftmodule -o <OBJECT>")
+    "<CMAKE_Swift_COMPILER> -frontend -c <DEFINES> <INCLUDES> <FLAGS> -primary-file <SOURCE> <Swift-SOURCES> <Swift-BRIDGING_HEADER> -emit-module-doc-path <OBJECT>~partial.swiftdoc -emit-module -module-name <TARGET_NAME> -emit-module-path <OBJECT>~partial.swiftmodule -o <OBJECT>")
 endif()
 
 
 if(NOT CMAKE_Swift_LINK_EXECUTABLE)
   set(CMAKE_Swift_LINK_EXECUTABLE
-    "<CMAKE_Swift_COMPILER>c <FLAGS> <CMAKE_Swift_LINK_FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES>")
+    "<CMAKE_Swift_COMPILER>c <FLAGS> <CMAKE_Swift_LINK_FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES>")
 #    "<CMAKE_Swift_COMPILER> <FLAGS> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET> <LINK_LIBRARIES>")
 endif()
 
