@@ -38,6 +38,24 @@ if(NOT CMAKE_Swift_COMPILER_WORKS)
   try_compile(CMAKE_Swift_COMPILER_WORKS ${CMAKE_BINARY_DIR}
     ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/main.swift
     OUTPUT_VARIABLE __CMAKE_Swift_COMPILER_OUTPUT)
+
+  # Android workaround: try_compile tries to make an executable with a main entry point.
+  # This isn't the normal use case on Android since real apps must build dynamic libraries and load them through Java.
+  # Currently on Ubuntu 16.10 when I build Swift/Android through Steam-Runtime,
+  # this triggers an error when the entry points are trying to be built in.
+  # I think it is a C++ broken ABI story between compiler versions.
+  # In any case, I want to ignore this error. Everything else seems to work.
+  # If we get this far, things are working.
+  if(ANDROID)
+    # /home/pinky/Android/android-ndk-r13b/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld.gold:
+    # error:
+    # /usr/bin/../lib/gcc/x86_64-linux-gnu/6.2.0/../../../x86_64-linux-gnu/crt1.o:
+    # unsupported reloc 41 against global symbol __libc_start_main
+    if(${__CMAKE_Swift_COMPILER_OUTPUT} MATCHES "__libc_start_main")
+      set(CMAKE_Swift_COMPILER_WORKS 1)
+    endif()
+  endif()
+
   # Move result from cache to normal variable.
   set(CMAKE_Swift_COMPILER_WORKS ${CMAKE_Swift_COMPILER_WORKS})
   unset(CMAKE_Swift_COMPILER_WORKS CACHE)
