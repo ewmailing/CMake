@@ -105,6 +105,9 @@ protected:
   /// @return the output path for the target.
   virtual std::string GetTargetOutputDir() const;
 
+  std::string GetSwiftSourceFilesString(const std::string& lang) const;
+  std::string GetSwiftBridgingHeaderString(const std::string& lang) const;
+
   void WriteLanguageRules(const std::string& language);
   void WriteCompileRule(const std::string& language);
   void WriteObjectBuildStatements();
@@ -119,7 +122,9 @@ protected:
     std::string const& objectFileDir,
     std::string const& flags,
     std::string const& defines,
-    std::string const& includes
+    std::string const& includes,
+    std::string const& sourcesSwift,
+    std::string const& swiftBridgingHeaderFlags
     );
 
   cmNinjaDeps GetObjects() const
