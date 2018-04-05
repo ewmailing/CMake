@@ -50,6 +50,16 @@ std::string cmRulePlaceholderExpander::ExpandRuleVariable(
       return replaceValues.Source;
     }
   }
+  if (replaceValues.SourcesSwift) {
+    if (variable == "Swift-SOURCES") {
+      return replaceValues.SourcesSwift;
+    }
+  }
+  if (replaceValues.SwiftBridgingHeaderFlags) {
+    if(variable == "Swift-BRIDGING_HEADER") {
+      return replaceValues.SwiftBridgingHeaderFlags;
+    }
+  }
   if (replaceValues.PreprocessedSource) {
     if (variable == "PREPROCESSED_SOURCE") {
       return replaceValues.PreprocessedSource;

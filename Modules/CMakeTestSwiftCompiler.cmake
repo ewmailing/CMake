@@ -23,7 +23,7 @@ unset(CMAKE_Swift_COMPILER_WORKS CACHE)
 if(NOT CMAKE_Swift_COMPILER_WORKS)
   PrintTestCompilerStatus("Swift" "")
   file(WRITE ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/main.swift
-    "import Foundation\n"
+#    "import Foundation\n"
     "print(\"CMake\")\n")
   try_compile(CMAKE_Swift_COMPILER_WORKS ${CMAKE_BINARY_DIR}
     ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/main.swift

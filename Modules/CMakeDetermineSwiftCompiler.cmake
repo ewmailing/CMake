@@ -11,7 +11,49 @@ if("${CMAKE_GENERATOR}" STREQUAL "Xcode")
   set(CMAKE_Swift_COMPILER_XCODE_TYPE sourcecode.swift)
   _cmake_find_compiler_path(Swift)
 else()
-  message(FATAL_ERROR "Swift language not supported by \"${CMAKE_GENERATOR}\" generator")
+	#  message(FATAL_ERROR "Swift language not supported by \"${CMAKE_GENERATOR}\" generator")
+
+  if(NOT CMAKE_Swift_COMPILER)
+    set(CMAKE_Swift_COMPILER_INIT NOTFOUND)
+
+    # prefer the environment variable CC
+	if(NOT $ENV{SWIFTC} STREQUAL "")
+      get_filename_component(CMAKE_Swift_COMPILER_INIT $ENV{SWIFTC} PROGRAM PROGRAM_ARGS CMAKE_Swift_FLAGS_ENV_INIT)
+      if(CMAKE_Swift_FLAGS_ENV_INIT)
+        set(CMAKE_Swift_COMPILER_ARG1 "${CMAKE_Swift_FLAGS_ENV_INIT}" CACHE STRING "First argument to C compiler")
+      endif()
+      if(NOT EXISTS ${CMAKE_Swift_COMPILER_INIT})
+        message(FATAL_ERROR "Could not find compiler set in environment variable CC:\n$ENV{SWIFTC}.")
+      endif()
+    endif()
+
+    # next try prefer the compiler specified by the generator
+	if(CMAKE_GENERATOR_SWIFTC)
+      if(NOT CMAKE_Swift_COMPILER_INIT)
+        set(CMAKE_Swift_COMPILER_INIT ${CMAKE_GENERATOR_SWIFTC})
+      endif()
+    endif()
+
+    # finally list compilers to try
+    if(NOT CMAKE_Swift_COMPILER_INIT)
+		#		set(CMAKE_Swift_COMPILER_LIST swiftc)
+		      set(CMAKE_Swift_COMPILER_LIST swift)
+    endif()
+
+	  MESSAGE("_cmake_find_compiler")
+	_cmake_find_compiler(Swift)
+
+  else()
+	  MESSAGE("_cmake_find_compiler_path")
+    _cmake_find_compiler_path(Swift)
+  endif()
+  mark_as_advanced(CMAKE_Swift_COMPILER)
+
+
+
+
+
+
 endif()
 
 # Build a small source file to identify the compiler.
@@ -43,3 +85,6 @@ configure_file(${CMAKE_ROOT}/Modules/CMakeSwiftCompiler.cmake.in
   ${CMAKE_PLATFORM_INFO_DIR}/CMakeSwiftCompiler.cmake
   @ONLY
   )
+
+set(CMAKE_Swift_COMPILER_ENV_VAR "SWIFTC")
+

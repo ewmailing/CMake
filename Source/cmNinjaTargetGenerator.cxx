@@ -384,6 +384,49 @@ std::string cmNinjaTargetGenerator::GetTargetName() const
   return this->GeneratorTarget->GetName();
 }
 
+std::string cmNinjaTargetGenerator::GetSwiftSourceFilesString(const std::string& lang) const
+{
+  // Swift needs a list of all Swift source files
+  std::string sourceFilesSwiftString;
+  if(lang == "Swift")
+    {
+    std::vector<cmSourceFile const*> objectSources;
+    const std::string& config =
+      this->Makefile->GetSafeDefinition("CMAKE_BUILD_TYPE");
+    this->GeneratorTarget->GetObjectSources(objectSources, config);
+    for(std::vector<cmSourceFile const*>::const_iterator
+        si = objectSources.begin(); si != objectSources.end(); ++si)
+      {
+      if((*si)->GetLanguage() == "Swift")
+        {
+          sourceFilesSwiftString += (*si)->GetFullPath();
+          sourceFilesSwiftString += " ";
+        }
+      }
+    }
+  return sourceFilesSwiftString;
+}
+
+std::string cmNinjaTargetGenerator::GetSwiftBridgingHeaderString(const std::string& lang) const
+{
+  std::string swiftBridgingHeaderString;
+  if(lang == "Swift")
+    {
+
+    const char *bridging_header = this->GeneratorTarget->GetProperty("SWIFT_BRIDGING_HEADER");
+    // We only set the bridging header if it has been set.
+    // This handles the -import-objc-header lead-in switch 
+    // so we can omit the whole thing if not set.
+    if(bridging_header)
+      {
+          swiftBridgingHeaderString = "-import-objc-header ";
+          swiftBridgingHeaderString += bridging_header;
+          swiftBridgingHeaderString += " ";
+      }
+    }
+  return swiftBridgingHeaderString;
+}
+
 bool cmNinjaTargetGenerator::SetMsvcTargetPdbVariable(cmNinjaVars& vars) const
 {
   cmMakefile* mf = this->GetMakefile();
@@ -437,6 +480,8 @@ void cmNinjaTargetGenerator::WriteCompileRule(const std::string& lang)
   vars.TargetCompilePDB = "$TARGET_COMPILE_PDB";
   vars.ObjectDir = "$OBJECT_DIR";
   vars.ObjectFileDir = "$OBJECT_FILE_DIR";
+  vars.SourcesSwift = "$Swift-SOURCES";
+  vars.SwiftBridgingHeaderFlags = "$Swift-BRIDGING-HEADER";
 
   // For some cases we do an explicit preprocessor invocation.
   bool const explicitPP = this->NeedExplicitPreprocessing(lang);
@@ -857,13 +902,15 @@ void cmNinjaTargetGenerator::WriteObjectBuildStatement(
 {
   std::string const language = source->GetLanguage();
   std::string const sourceFileName =
-    language == "RC" ? source->GetFullPath() : this->GetSourceFilePath(source);
+    (language=="RC" || language=="Swift") ? source->GetFullPath() : this->GetSourceFilePath(source);
   std::string const objectDir =
     this->ConvertToNinjaPath(this->GeneratorTarget->GetSupportDirectory());
   std::string const objectFileName =
     this->ConvertToNinjaPath(this->GetObjectFilePath(source));
   std::string const objectFileDir =
     cmSystemTools::GetFilenamePath(objectFileName);
+  std::string const sourcesSwift = this->GetSwiftSourceFilesString(language);
+  std::string const swiftBridgingHeaderFlags = this->GetSwiftBridgingHeaderString(language);
 
   cmNinjaVars vars;
   vars["FLAGS"] = this->ComputeFlagsForObject(source, language);
@@ -892,9 +939,17 @@ void cmNinjaTargetGenerator::WriteObjectBuildStatement(
     }
   }
 
+  if (language == "Swift")
+    {
+      vars["Swift-SOURCES"] = sourcesSwift;
+      vars["Swift-BRIDGING-HEADER"] = swiftBridgingHeaderFlags;
+    }
+
   this->ExportObjectCompileCommand(
     language, sourceFileName, objectDir, objectFileName, objectFileDir,
-    vars["FLAGS"], vars["DEFINES"], vars["INCLUDES"]);
+    vars["FLAGS"], vars["DEFINES"], vars["INCLUDES"],
+    sourcesSwift, swiftBridgingHeaderFlags
+    );
 
   std::string comment;
   std::string rule = this->LanguageCompilerRule(language);
@@ -1103,7 +1158,8 @@ void cmNinjaTargetGenerator::ExportObjectCompileCommand(
   std::string const& language, std::string const& sourceFileName,
   std::string const& objectDir, std::string const& objectFileName,
   std::string const& objectFileDir, std::string const& flags,
-  std::string const& defines, std::string const& includes)
+  std::string const& defines, std::string const& includes,
+  std::string const& sourcesSwift, std::string const& swiftBridgingHeaderFlags)
 {
   if (!this->Makefile->IsOn("CMAKE_EXPORT_COMPILE_COMMANDS")) {
     return;
@@ -1131,6 +1187,8 @@ void cmNinjaTargetGenerator::ExportObjectCompileCommand(
   compileObjectVars.Flags = flags.c_str();
   compileObjectVars.Defines = defines.c_str();
   compileObjectVars.Includes = includes.c_str();
+  compileObjectVars.SourcesSwift = sourcesSwift.c_str();
+  compileObjectVars.SwiftBridgingHeaderFlags = swiftBridgingHeaderFlags.c_str();
 
   // Rule for compiling object file.
   std::vector<std::string> compileCmds;

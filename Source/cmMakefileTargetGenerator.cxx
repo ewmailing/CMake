@@ -486,6 +486,41 @@ void cmMakefileTargetGenerator::WriteObjectBuildFile(
                           << "\n";
   }
 
+  // Swift needs a list of all Swift source files
+  std::string sourceFilesSwiftString;
+  if(lang == "Swift")
+    {
+    std::vector<cmSourceFile const*> objectSources;
+    const std::string& config =
+      this->Makefile->GetSafeDefinition("CMAKE_BUILD_TYPE");
+    this->GeneratorTarget->GetObjectSources(objectSources, config);
+    for(std::vector<cmSourceFile const*>::const_iterator
+        si = objectSources.begin(); si != objectSources.end(); ++si)
+      {
+      if((*si)->GetLanguage() == "Swift")
+        {
+          sourceFilesSwiftString += (*si)->GetFullPath();
+          sourceFilesSwiftString += " ";
+        }
+      }
+    }
+
+  std::string swiftBridgingHeaderString;
+  if(lang == "Swift")
+    {
+
+    const char *bridging_header = this->GeneratorTarget->GetProperty("SWIFT_BRIDGING_HEADER");
+    // We only set the bridging header if it has been set.
+    // This handles the -import-objc-header lead-in switch 
+    // so we can omit the whole thing if not set.
+    if(bridging_header)
+      {
+          swiftBridgingHeaderString = "-import-objc-header ";
+          swiftBridgingHeaderString += bridging_header;
+          swiftBridgingHeaderString += " ";
+      }
+    }
+
   // Get the output paths for source and object files.
   std::string sourceFile = this->LocalGenerator->ConvertToOutputFormat(
     source.GetFullPath(), cmOutputConverter::SHELL);
@@ -557,6 +592,8 @@ void cmMakefileTargetGenerator::WriteObjectBuildFile(
   vars.TargetPDB = targetOutPathPDB.c_str();
   vars.TargetCompilePDB = targetOutPathCompilePDB.c_str();
   vars.Source = sourceFile.c_str();
+  vars.SourcesSwift = sourceFilesSwiftString.c_str();
+  vars.SwiftBridgingHeaderFlags = swiftBridgingHeaderString.c_str();
   std::string shellObj =
     this->LocalGenerator->ConvertToOutputFormat(obj, cmOutputConverter::SHELL);
   vars.Object = shellObj.c_str();
